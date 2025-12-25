@@ -18,7 +18,7 @@ class Ui_MainWindow(object):
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
         self.widget = QtWidgets.QWidget(self.centralwidget)
-        self.widget.setGeometry(QtCore.QRect(20, 20, 1231, 701))
+        self.widget.setGeometry(QtCore.QRect(0, 0, 1231, 701))
         self.widget.setStyleSheet("border-radius:10px;\n"
 "background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:1, stop:0.322034 rgba(97, 214, 239, 255), stop:0.836158 rgba(213, 165, 248, 255));")
         self.widget.setObjectName("widget")
@@ -148,6 +148,26 @@ class Ui_MainWindow(object):
 "                            padding-right: 4px;\n"
 "                        }")
         self.pushButton_save.setObjectName("pushButton_save")
+        self.pushButton_Preprocessing = QtWidgets.QPushButton(self.frame)
+        self.pushButton_Preprocessing.setGeometry(QtCore.QRect(30, 230, 121, 31))
+        self.pushButton_Preprocessing.setStyleSheet("QPushButton {\n"
+"                            border: 2px solid black;\n"
+"                            border-radius: 10px; /* 圆角半径 */\n"
+"                            padding: 6px; /* 按钮内边距 */\n"
+"                            background-color: white;\n"
+"                            min-width: 80px;\n"
+"                        }\n"
+"                        QPushButton:hover {\n"
+"                            background-color: lightgray;\n"
+"                        }\n"
+"                        QPushButton:pressed {\n"
+"                            background-color: gray;\n"
+"                            padding-top: 8px;\n"
+"                            padding-left: 8px;\n"
+"                            padding-bottom: 4px;\n"
+"                            padding-right: 4px;\n"
+"                        }")
+        self.pushButton_Preprocessing.setObjectName("pushButton_Preprocessing")
         self.frame_2 = QtWidgets.QFrame(self.widget)
         self.frame_2.setGeometry(QtCore.QRect(210, 50, 981, 601))
         self.frame_2.setStyleSheet("background-color: rgb(249, 255, 220);")
@@ -177,7 +197,7 @@ class Ui_MainWindow(object):
         self.scrollAreaWidgetContents_retimage.setObjectName("scrollAreaWidgetContents_retimage")
         self.scrollArea_retimage.setWidget(self.scrollAreaWidgetContents_retimage)
         self.textEdit = QtWidgets.QTextEdit(self.frame_2)
-        self.textEdit.setGeometry(QtCore.QRect(30, 560, 431, 31))
+        self.textEdit.setGeometry(QtCore.QRect(30, 560, 441, 31))
         self.textEdit.setStyleSheet("background-color: rgb(249, 255, 220);")
         self.textEdit.setObjectName("textEdit")
         self.textEdit_2 = QtWidgets.QTextEdit(self.frame_2)
@@ -216,6 +236,19 @@ class Ui_MainWindow(object):
 "    background-color: rgb(221, 84, 66);\n"
 "}")
         self.pushButton_exit.setObjectName("pushButton_exit")
+        self.textBrowser = QtWidgets.QTextBrowser(self.widget)
+        self.textBrowser.setGeometry(QtCore.QRect(480, 10, 251, 31))
+        self.textBrowser.setStyleSheet("background-color: rgb(255, 255, 255);")
+        self.textBrowser.setObjectName("textBrowser")
+        self.textBrowser_2 = QtWidgets.QTextBrowser(self.widget)
+        self.textBrowser_2.setGeometry(QtCore.QRect(480, 660, 251, 31))
+        self.textBrowser_2.setStyleSheet("background-color: rgb(255, 255, 255);")
+        self.textBrowser_2.setObjectName("textBrowser_2")
+        self.transformationContainer_5 = QtWidgets.QWidget(self.widget)
+        self.transformationContainer_5.setGeometry(QtCore.QRect(180, 290, 131, 141))
+        self.transformationContainer_5.setToolTipDuration(0)
+        self.transformationContainer_5.setStyleSheet("background-color: rgb(226, 255, 255);")
+        self.transformationContainer_5.setObjectName("transformationContainer_5")
         MainWindow.setCentralWidget(self.centralwidget)
 
         self.retranslateUi(MainWindow)
@@ -230,14 +263,25 @@ class Ui_MainWindow(object):
         self.pushButton_Partition.setText(_translate("MainWindow", "图像分割"))
         self.pushButton_add.setText(_translate("MainWindow", "添加图片"))
         self.pushButton_save.setText(_translate("MainWindow", "保存图片"))
+        self.pushButton_Preprocessing.setText(_translate("MainWindow", "预处理"))
         self.textEdit.setHtml(_translate("MainWindow", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
 "<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
 "p, li { white-space: pre-wrap; }\n"
 "</style></head><body style=\" font-family:\'SimSun\'; font-size:9pt; font-weight:400; font-style:normal;\">\n"
-"<p align=\"center\" style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">初始图像</p></body></html>"))
+"<p align=\"center\" style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:14pt; font-weight:600;\">初始图像</span></p></body></html>"))
         self.textEdit_2.setHtml(_translate("MainWindow", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
 "<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
 "p, li { white-space: pre-wrap; }\n"
 "</style></head><body style=\" font-family:\'SimSun\'; font-size:9pt; font-weight:400; font-style:normal;\">\n"
-"<p align=\"center\" style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">处理后图像</p></body></html>"))
+"<p align=\"center\" style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:14pt; font-weight:600;\">处理后图像</span></p></body></html>"))
         self.pushButton_exit.setText(_translate("MainWindow", "X"))
+        self.textBrowser.setHtml(_translate("MainWindow", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+"<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
+"p, li { white-space: pre-wrap; }\n"
+"</style></head><body style=\" font-family:\'SimSun\'; font-size:9pt; font-weight:400; font-style:normal;\">\n"
+"<p align=\"center\" style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:14pt;\">数字图像处理算法集成系统</span></p></body></html>"))
+        self.textBrowser_2.setHtml(_translate("MainWindow", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+"<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
+"p, li { white-space: pre-wrap; }\n"
+"</style></head><body style=\" font-family:\'SimSun\'; font-size:9pt; font-weight:400; font-style:normal;\">\n"
+"<p align=\"center\" style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:14pt;\">222241807330   姚均泽</span></p></body></html>"))

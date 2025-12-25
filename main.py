@@ -46,12 +46,14 @@ class MainWindow(QMainWindow):
         self.init_container(self.ui.transformationContainer_2, ['Gray Scale', 'Histogram Equalization'])
         self.init_container(self.ui.transformationContainer_3, ['Mean Filter', 'Median Filter', 'Low Pass Filter'])
         self.init_container(self.ui.transformationContainer_4, ['Edge Detection', 'Thresholding', 'Region Segmentation'])
+        self.init_container(self.ui.transformationContainer_5, ['Grayscale', 'binarization', 'Gaussian blur', 'edge detection'])
 
         # 连接按钮点击事件到槽函数
         self.ui.pushButton_Geometric.clicked.connect(lambda: self.toggle_container(self.ui.transformationContainer_1))
         self.ui.pushButton_Contrast.clicked.connect(lambda: self.toggle_container(self.ui.transformationContainer_2))
         self.ui.pushButton_Smooth.clicked.connect(lambda: self.toggle_container(self.ui.transformationContainer_3))
         self.ui.pushButton_Partition.clicked.connect(lambda: self.toggle_container(self.ui.transformationContainer_4))
+        self.ui.pushButton_Preprocessing.clicked.connect(lambda: self.toggle_container(self.ui.transformationContainer_5))
 
         # 添加图片按钮连接到槽函数
         self.ui.pushButton_add.clicked.connect(self.load_image)
@@ -261,7 +263,18 @@ class MainWindow(QMainWindow):
         elif text == 'Region Segmentation':
             transformed_pixmap = self.region_segmentation(pixmap)
             transformation_result_message = "区域分割后结果图片"
-
+        elif text == 'Grayscale':
+            transformed_pixmap = self.grayscale(pixmap)
+            transformation_result_message = "灰度化结果图片"
+        elif text == 'binarization':
+            transformed_pixmap = self.binarization(pixmap)
+            transformation_result_message = "二值化结果图片"
+        elif text == 'Gaussian blur':
+            transformed_pixmap = self.gaussian_blur(pixmap)
+            transformation_result_message = "高斯模糊结果图片"
+        elif text == 'edge detection':
+            transformed_pixmap = self.edge_detection(pixmap)
+            transformation_result_message = "边缘检测结果图片"
         if transformed_pixmap:
             self.show_transformed_image(transformed_pixmap)
             self.transformed_pixmap = transformed_pixmap  # 更新变换后的图像
@@ -270,7 +283,7 @@ class MainWindow(QMainWindow):
         try:
             print(f"new text:{transformation_result_message}")
             # 使用 HTML 格式化文本以实现居中
-            centered_text = f"<div align='center'>{transformation_result_message}</div>"
+            centered_text = f"<div align='center' style='font-size:18px; font-weight:bold;'>{transformation_result_message}</div>"
             self.ui.textEdit_2.setHtml(centered_text)
 
         except Exception as e:
@@ -840,6 +853,192 @@ class MainWindow(QMainWindow):
         cp = QDesktopWidget().availableGeometry().center()
         qr.moveCenter(cp)
         self.move(qr.topLeft())
+
+    def grayscale(self, pixmap):
+        """灰度化操作"""
+        try:
+            # 将 QPixmap 转换为 QImage
+            image = pixmap.toImage()
+            width, height = image.width(), image.height()
+
+            # 创建灰度图像
+            gray_image = QImage(width, height, QImage.Format_Grayscale8)
+
+            for x in range(width):
+                for y in range(height):
+                    color = QColor(image.pixel(x, y))
+                    # 使用加权法计算灰度值 (人眼对不同颜色的敏感度不同)
+                    gray = int(0.299 * color.red() + 0.587 * color.green() + 0.114 * color.blue())
+                    gray_image.setPixel(x, y, qRgb(gray, gray, gray))
+
+            return QPixmap.fromImage(gray_image)
+
+        except Exception as e:
+            print(f"Error during grayscale: {e}")
+            return None
+
+    def binarization(self, pixmap):
+        """二值化操作"""
+        try:
+            # 弹出对话框获取用户输入的阈值
+            default_threshold = 128
+            threshold, ok = QInputDialog.getInt(
+                self,
+                '设置二值化阈值',
+                '请输入阈值 (0-255):',
+                value=default_threshold,
+                min=0,
+                max=255
+            )
+            if not ok:
+                return None
+
+            # 首先将图像转换为灰度
+            gray_pixmap = self.grayscale(pixmap)
+            if gray_pixmap is None:
+                return None
+
+            # 将灰度 QPixmap 转换为 QImage
+            image = gray_pixmap.toImage()
+            width, height = image.width(), image.height()
+
+            # 创建二值图像
+            binary_image = QImage(width, height, QImage.Format_Mono)
+
+            for x in range(width):
+                for y in range(height):
+                    gray = qGray(image.pixel(x, y))
+                    # 根据阈值进行二值化
+                    if gray >= threshold:
+                        binary_image.setPixel(x, y, 1)  # 白色
+                    else:
+                        binary_image.setPixel(x, y, 0)  # 黑色
+
+            return QPixmap.fromImage(binary_image)
+
+        except Exception as e:
+            print(f"Error during binarization: {e}")
+            return None
+
+    def gaussian_blur(self, pixmap):
+        """高斯模糊操作"""
+        try:
+            # 弹出对话框获取用户输入的高斯核大小
+            kernel_size, ok1 = QInputDialog.getInt(
+                self,
+                '设置高斯核大小',
+                '请输入高斯核大小 (大于0的奇数):',
+                value=5,
+                min=1,
+                max=31
+            )
+            if not ok1:
+                return None
+
+            # 确保核大小为奇数
+            if kernel_size % 2 == 0:
+                QMessageBox.warning(self, "警告", "高斯核大小必须是奇数，已自动加1")
+                kernel_size += 1
+
+            # 弹出对话框获取用户输入的sigma值
+            sigma, ok2 = QInputDialog.getDouble(
+                self,
+                '设置sigma值',
+                '请输入sigma值 (标准差):',
+                value=1.0,
+                min=0.1,
+                max=10.0,
+                decimals=1
+            )
+            if not ok2:
+                return None
+
+            # 将 QPixmap 转换为 QImage
+            image = pixmap.toImage()
+            width, height = image.width(), image.height()
+
+            # 将 QImage 转换为 OpenCV 格式
+            # 首先转换为 RGB888 格式
+            if image.format() != QImage.Format_RGB888:
+                image = image.convertToFormat(QImage.Format_RGB888)
+
+            # 获取图像数据
+            ptr = image.bits()
+            ptr.setsize(image.byteCount())
+
+            # 转换为 numpy 数组
+            arr = np.array(ptr).reshape(height, width, 3)
+
+            # OpenCV 使用 BGR 格式，需要转换
+            bgr_image = cv2.cvtColor(arr, cv2.COLOR_RGB2BGR)
+
+            # 应用高斯模糊
+            blurred_image = cv2.GaussianBlur(bgr_image, (kernel_size, kernel_size), sigma)
+
+            # 将 OpenCV 格式转换回 RGB
+            rgb_image = cv2.cvtColor(blurred_image, cv2.COLOR_BGR2RGB)
+
+            # 创建新的 QImage
+            height, width, channel = rgb_image.shape
+            bytes_per_line = 3 * width
+
+            # 创建 QImage
+            qimage = QImage(rgb_image.data, width, height, bytes_per_line, QImage.Format_RGB888)
+
+            return QPixmap.fromImage(qimage)
+
+        except Exception as e:
+            print(f"Error during Gaussian blur: {e}")
+            # 如果 OpenCV 方法失败，使用 QPainter 实现简单的高斯模糊效果
+            try:
+                return self.simple_gaussian_blur(pixmap, kernel_size)
+            except:
+                return None
+
+    def simple_gaussian_blur(self, pixmap, kernel_size):
+        """简单的高斯模糊实现（使用多次平均滤波模拟）"""
+        # 创建临时 pixmap
+        temp_pixmap = pixmap.copy()
+
+        # 应用多次平均滤波来模拟高斯模糊
+        for _ in range(3):  # 迭代次数越多，效果越接近高斯模糊
+            # 创建临时图像
+            temp_image = temp_pixmap.toImage()
+            width, height = temp_image.width(), temp_image.height()
+
+            blurred_image = QImage(width, height, QImage.Format_ARGB32)
+
+            half_kernel = kernel_size // 2
+
+            # 应用简单的均值滤波（作为高斯模糊的近似）
+            for x in range(width):
+                for y in range(height):
+                    sum_r, sum_g, sum_b, sum_a = 0, 0, 0, 0
+                    count = 0
+
+                    for i in range(-half_kernel, half_kernel + 1):
+                        for j in range(-half_kernel, half_kernel + 1):
+                            px_x = min(max(x + i, 0), width - 1)
+                            px_y = min(max(y + j, 0), height - 1)
+
+                            color = QColor(temp_image.pixel(px_x, px_y))
+                            sum_r += color.red()
+                            sum_g += color.green()
+                            sum_b += color.blue()
+                            sum_a += color.alpha()
+                            count += 1
+
+                    avg_color = QColor(
+                        sum_r // count,
+                        sum_g // count,
+                        sum_b // count,
+                        sum_a // count
+                    )
+                    blurred_image.setPixel(x, y, avg_color.rgba())
+
+            temp_pixmap = QPixmap.fromImage(blurred_image)
+
+        return temp_pixmap
 
 
 if __name__ == '__main__':
